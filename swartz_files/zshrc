@@ -1,0 +1,236 @@
+# ssh agent forwarding
+eval `ssh-agent` >/dev/null 2>&1
+find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
+find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
+
+# OS X
+if [[ `uname` == "Darwin" ]]; then
+  alias ls='ls -G --color=auto'
+  alias grep='grep --color=always'
+  alias showhidden="defaults write com.apple.Finder AppleShowAllFiles YES && killall Finder"
+  alias hidehidden="defaults write com.apple.Finder AppleShowAllFiles NO && killall Finder"
+  # homebrew
+  [[ -z "`which wget`" ]] && brew install wget
+  [[ -z "`which brew`" ]] && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  # Various Plugins
+  [[ ! -e /usr/local/share/zsh/site-functions/_aws ]] && (brew install awscli >/dev/null 2>&1 || brew link --overwrite awscli)
+fi
+
+# Oh My ZSH!
+. /usr/local/share/zsh/site-functions/_aws 2>/dev/null
+. ~/.oh-my-zshrc
+[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
+
+# Ctrl-S is a pain in the ass
+stty -ixon
+
+source ~/.zprompt
+setprompt
+
+# keyboard behavior# {{{
+bindkey ';5D' backward-word
+bindkey ';5C' forward-word
+bindkey    "^[[3~"          delete-char
+bindkey    "^[3;5~"         delete-char
+# create a zkbd compatible hash;
+# to add other keys to this hash, see: man 5 terminfo
+typeset -A key
+key[Home]=${terminfo[khome]}
+key[End]=${terminfo[kend]}
+key[Insert]=${terminfo[kich1]}
+key[Delete]=${terminfo[kdch1]}
+key[Up]=${terminfo[kcuu1]}
+key[Down]=${terminfo[kcud1]}
+key[Left]=${terminfo[kcub1]}
+key[Right]=${terminfo[kcuf1]}
+key[PageUp]=${terminfo[kpp]}
+key[PageDown]=${terminfo[knp]}
+# setup key accordingly
+[[ -n "${key[Home]}"    ]]  && bindkey  "${key[Home]}"    beginning-of-line
+[[ -n "${key[End]}"     ]]  && bindkey  "${key[End]}"     end-of-line
+[[ -n "${key[Insert]}"  ]]  && bindkey  "${key[Insert]}"  overwrite-mode
+[[ -n "${key[Delete]}"  ]]  && bindkey  "${key[Delete]}"  delete-char
+[[ -n "${key[Up]}"      ]]  && bindkey  "${key[Up]}"      up-line-or-history
+[[ -n "${key[Down]}"    ]]  && bindkey  "${key[Down]}"    down-line-or-history
+[[ -n "${key[Left]}"    ]]  && bindkey  "${key[Left]}"    backward-char
+[[ -n "${key[Right]}"   ]]  && bindkey  "${key[Right]}"   forward-char
+
+# Finally, make sure the terminal is in application mode, when zle is
+# active. Only then are the values from $terminfo valid.
+if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
+    function zle-line-init () {
+        printf '%s' "${terminfo[smkx]}"
+    }
+    function zle-line-finish () {
+        printf '%s' "${terminfo[rmkx]}"
+    }
+    zle -N zle-line-init
+    zle -N zle-line-finish
+fi
+# }}}
+
+#--------------------------------------------------------------------------------------
+PATH=$PATH:/usr/local/bin:/usr/local/scripts:~/scripts
+
+# ZSH
+setopt correct
+HISTFILE=$HOME/.zhistory			# enable history saving on shell exit
+setopt APPEND_HISTORY				# append rather than overwrite history file.
+HISTSIZE=99999999						# lines of history to maintain memory
+SAVEHIST=99999999					# lines of history to maintain in history file.
+setopt HIST_EXPIRE_DUPS_FIRST		# allow dups, but expire old ones when I hit HISTSIZE
+setopt EXTENDED_HISTORY				# save timestamp and runtime information
+setopt interactivecomments			# allow comments on command line
+setopt noequals						# don't evaluate = as command substitution
+alias cp='nocorrect cp '
+alias mv='nocorrect mv '
+alias mkdir='nocorrect mkdir '
+alias ssh='nocorrect ssh '
+alias vi='vim'
+alias l='ls -lhA'
+alias ll='ls -l'
+alias ls='ls -G'
+alias watch='watch --color'
+alias zedit="vim ~/.zshrc"
+alias zrefresh="source ~/.zshrc"
+alias st="git status"
+alias ohmyzedit="vim ~/.oh-my-zshrc"
+function grepv () { grep "$@" | grep -v --color grep }
+function psgrep () { ps aux | grep "$@" | grep -v --color grep }
+function shdo () {
+  FULLCMD=($*)
+  CMD="$1" ARGS=${FULLCMD[@]:1}
+  echo -en "\e[01m* $CMD $ARGS\e[0m"
+  NUMTABS=$((`tput cols`/8 - 2))
+  echo -ne "\r"
+  for X in {1..$NUMTABS}
+  do
+    echo -ne "\t"
+  done
+  echo -e "    \e[0;1m[ \e[32m`date +%T` \e[0;1m]\e[0m"
+  eval $CMD $ARGS
+  RC=$?
+  if [ $RC -eq 0 ]
+  then
+    echo -e "[ \e[32mOK\e[0m ]"
+  else
+    echo -e "[ \e[01;31mFAIL\e[0m ] ($RC)"
+  fi
+}
+
+# include any bashrc stuff we don't want to version control
+[[ -e ~/.initSwaaatz ]] && source ~/.initSwaaatz
+[[ -e ~/.initRean ]] && source ~/.initRean
+[[ -e ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh ]] && source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh
+
+# GIT
+function mod (){
+  FILES="$(git status | grep --color=no modified | sed 's/\(.*\)modified:\([\ ]*\)\(.*\)/\3/')"
+  FILES=$(echo $FILES | sort | uniq)
+	if [[ ! -z "$@" ]]; then
+		FILES="$(echo $FILES | grep --color=no "$@")"
+	fi
+	if [[ ! -z "$FILES" ]]; then
+		FILES="$(echo $FILES | tr "\n" " ")"
+    vim $(echo $FILES)
+	fi
+}
+
+# RUBY
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+alias rbinstall="RUBY_CONFIGURE_OPTS=--with-readline-dir=`brew --prefix readline` rbenv install"
+
+# CHEF
+function rekitchen (){
+  kitchen destroy $* && kitchen converge $*
+}
+alias kk="kitchen converge"
+export EDITOR=`which vim`
+
+# AWS
+alias enva='env | grep --color=no AWS'
+function awsdefault (){
+  export AWS_DEFAULT_PROFILE=$1
+}
+alias describe-ec2='aws ec2 describe-instances --instance-ids '
+function ec2-ipbyname (){
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
+    jq ".Reservations[].Instances[].NetworkInterfaces[].PrivateIpAddresses[0].PrivateIpAddress" |
+    sed 's/"//g'
+}
+function ec2-publicipbyname (){
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
+    jq ".Reservations[].Instances[].PublicIpAddress" |
+    sed 's/"//g'
+}
+alias ec2ids="aws ec2 describe-instances --instance-ids"
+function ec2-namebyip (){
+  aws ec2 describe-instances --filters "Name=private-ip-address,Values=$1" "Name=instance-state-name,Values=running" | jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'|sed 's/"//g'
+}
+
+function aenv (){
+  source ~/.aws/$1/.autoenv.zsh
+}
+
+# VAGRANT# {{{
+function vid (){
+  IDS="`vagrant global-status | grep virtualbox | sed 's/\(.*\)virtualbox.*/\1/'`"
+  if [[ ! -z "$1" || `echo $IDS | wc -l` -gt 1 ]]; then
+    ID=`echo $IDS | /usr/bin/grep $1 2>/dev/null`
+  else
+    ID=`echo $IDS | head -n1`
+  fi
+  echo $ID | awk '{print $1}'
+}
+function vu (){ vagrant up $(vid $1) }
+function vh (){ vagrant halt $(vid $1) }
+function vd (){ vagrant destroy $(vid $1) -f }
+function vp (){ vagrant provision $(vid $1) }
+function vssh (){ vagrant ssh $(vid $1) 2> >(grep -v "Connection.*closed") }
+function vsshcmd (){ vagrant ssh $(vid $1) -c $2 2> >(grep -v "Connection.*closed") }
+alias vg="vagrant global-status | sed '/^[^\w]$/q'"
+alias vup="vu"
+alias vhalt="vh"
+alias vdestroy="vd"
+alias vprovision="vp"
+alias vcmd="vc"
+alias vupall='for VAG in $(vg|grep running| awk "{print $1}"|tr "\n" " "); do vagrant up $VAG; done'
+alias vhaltall='for VAG in $(vg|grep running|awk "{print $1}"|tr "\n" " "); do vagrant halt $VAG; done'
+alias vpall='for VAG in $(vg|grep running|awk "{print $1}"| tr "\n" " "); do vagrant provision $VAG; done'
+# }}}
+
+# ANSIBLE# {{{
+alias ahost='cat ~/.ansible.hosts'
+alias ahostedit='vim ~/.ansible.hosts'
+function ahostselect (){
+  if [[ -z $1 ]]; then
+    ls -l /Users/dswartz/.ansible.hosts
+  else
+    ln -sf /Users/dswartz/.ansible.hosts.$1 /Users/dswartz/.ansible.hosts
+  fi
+}
+# For Reference:
+# MAC Ansible Installed: /usr/local/Cellar/ansible/1.9.4/libexec/lib/python2.7/site-packages/ansible
+# }}}
+
+# TERRAFORM
+alias ta="terraform remote pull && terraform apply && terraform remote push"
+alias td="terraform remote pull && terraform destroy -force && terraform remote push"
+alias tp="terraform plan"
+
+# CONVENIENCE
+function fromnow (){
+  date -v+$1 "+%Y-%m-%d"
+}
+function bastion(){
+  if [[ -z "$1" ]]; then
+    ssh bastion
+  else
+    ssh bastion -t "ssh $1"
+  fi
+}
+alias bastionpem="scp -p ~/.ssh/swartz_trainee.pem bastion:~/.ssh/"
+
+# MAVEN
+#export PATH=$PATH:/opt/apache-maven-3.3.3/bin

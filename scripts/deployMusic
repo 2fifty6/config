@@ -1,0 +1,90 @@
+#!/usr/bin/python
+import argparse
+from os import path,listdir
+from mutagen.id3 import ID3
+from mutagen.flac import FLAC
+from mutagen.mp3 import MP3
+
+def validate_flac( flac_file ):
+#try:
+    flac_data = FLAC( flac_file )
+    f = open("/tmp/deployMusic.log", "a")
+    albumartist = str(flac_data["albumartist"])[3:-2]
+    title = str(flac_data["title"])[3:-2]
+    tracknumber = str(flac_data["tracknumber"])[3:-2]
+    f.write( albumartist + " -- " + tracknumber + " - " + title + "\n")
+    f.close()
+#except:
+#    return False
+    return True
+
+def validate_mp3( mp3_file ):
+    try:
+        mp3_data = MP3( mp3_file )
+    except:
+        return False
+    return True
+
+def validate_audio( audio_file, extension ):
+    if extension == "mp3":
+        return validate_mp3( audio_file )
+    elif extension == "flac":
+        return validate_flac( audio_file )
+    else:
+        return False
+
+def validate_all( all_files, extension ):
+    for audio_file in all_files:
+        if not validate_audio( audio_file, extension ):
+            return False
+    return True
+
+def get_files( dir_path, extension ):
+    dir_files = { 'audio': [], 'other': [] }
+    for item in listdir( dir_path ):
+        current_file = dir_path + '/' + item
+        # is file - analyze
+        if path.isfile( current_file ):
+            if current_file.rsplit( '.', 1 )[1] == extension:
+                dir_files['audio'].append( current_file )
+            else:
+                dir_files['other'].append( current_file )
+        # is directory - recursive case
+        else:
+            subdir_files = get_files( current_file, extension )
+            dir_files['audio'].extend( subdir_files['audio'] )
+            dir_files['other'].extend( subdir_files['other'] )
+
+    return dir_files
+
+# process command line argument
+parser = argparse.ArgumentParser( description='Get the directory' )
+parser.add_argument( 'dir_in' )
+arguments = parser.parse_args()
+dir_in = arguments.dir_in
+
+# are we looking for flac or mp3?
+if "TOFLAC" in dir_in:
+    extension = "flac"
+    validate_fn = "validate_flac"
+elif "TOMP3" in dir_in:
+    extension = "mp3"
+    validate_fn = "validate_mp3"
+
+# get files in directory
+dir_in_files = get_files( dir_in, extension )
+
+
+f = open( "/tmp/deployMusic.log", 'a' )
+for in_file in dir_in_files[ 'audio' ]:
+
+    f.write( in_file )
+    if validate_audio( in_file, extension ):
+        f.write( " - VALID!\n" )
+    else:
+        f.write( " - INVALID!\n" )
+
+answer = "YES" if validate_all( dir_in_files['audio'], extension ) else "NO"
+f.write( "\n\nAll files valid? " + answer )
+f.write( "\n" )
+f.close

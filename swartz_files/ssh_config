@@ -1,0 +1,18 @@
+Host *
+LogLevel=quiet
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+
+Host github.com
+  ForwardAgent=true
+
+Host chef-server
+  User ubuntu
+  ProxyCommand ssh bastion -q -W %h:%p
+
+Host bastion
+  User ubuntu
+  ForwardAgent=true
+
+Host 172.16.*
+  ProxyCommand ssh bastion -q -W %h:%p

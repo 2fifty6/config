@@ -1,0 +1,112 @@
+---
+
+- hosts: all
+  tasks:
+
+    ######################
+    ## INSTALL PACKAGES ##
+    ######################
+    - name: install apt ansible repo
+      apt_repository: repo="{{ item }}" state=present update_cache=yes
+      sudo: yes
+      with_items:
+        - 'deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main'
+      when: ansible_pkg_mgr == 'apt'
+
+      # only update apt cache if it's 24 hours old or more
+    - name: apt_install | update apt cache
+      apt: update_cache=yes cache_valid_time=86400
+      sudo: yes
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: install packages
+      apt: name={{ item }} state=latest
+      sudo: yes
+      with_items:
+        - vim
+        - zsh
+        - git
+        - sshpass
+        - python-pip
+        - openssl
+        - software-properties-common
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: install packages
+      yum: name={{ item }} state=latest
+      sudo: yes
+      with_items:
+        - epel-release
+        - vim
+        - zsh
+        - git
+        - sshpass
+        - python-pip
+        - openssl
+      when: ansible_pkg_mgr == 'yum'
+
+    - name: python packages
+      pip: name={{ item }}
+      sudo: yes
+      with_items:
+        - ansible-lint
+        - httplib2
+        - urlparse2
+        - 'http://github.com/diyan/pywinrm/archive/master.zip#egg=pywinrm'
+
+    ###############
+    ## CONFIGURE ##
+    ###############
+    - name: copy config repo contents
+      copy:
+        src={{ local_dir }}
+        dest={{ remote_dir }}
+        force=yes
+      ignore_errors: yes
+
+    - name: make sure necessary dirs exists
+      file:
+        path={{ ansible_user_dir }}/{{ item }}
+        state=directory
+      with_items:
+        - ".ssh"
+        - ".vim/bundle"
+
+    - name: set facts for configged files
+      set_fact:
+        src_config_files: ["ssh_config", "gitconfig", "vimrc", "zshrc"]
+        dest_config_files: [".ssh/config", ".gitconfig", ".vimrc", ".zshrc"]
+
+    - name: sync files file
+      file:
+        src={{ remote_dir }}/swartz_files/{{ item.0 }}
+        dest={{ ansible_user_dir }}/{{ item.1 }}
+      with_together:
+        - src_config_files
+        - dest_config_files
+
+    - name: chown src config files
+      file:
+        path={{ remote_dir }}/swartz_files/{{ item }}
+        owner={{ ansible_ssh_user }}
+      sudo: yes
+      with_items: src_config_files
+
+    - name: fix permissions on ssh config
+      file:
+        path={{ remote_dir }}/swartz_files/ssh_config
+        owner={{ ansible_ssh_user }}
+        mode=600
+      sudo: yes
+
+    - name: git clone vundle
+      git:
+        clone=yes
+        dest={{ ansible_user_dir }}/.vim/bundle/Vundle.vim
+        repo='https://github.com/gmarik/Vundle.vim.git'
+        accept_hostkey=yes
+
+    - name: install vim plugins
+      shell: 'vim +PluginInstal +qall'
+
+# vim:ft=ansible

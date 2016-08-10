@@ -1,0 +1,75 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'git@github.com:gmarik/Vundle.vim'
+Plugin 'git@github.com:tpope/vim-fugitive'
+Plugin 'git@github.com:scrooloose/syntastic.git'
+Plugin 'git@github.com:scrooloose/nerdtree.git'
+Plugin 'git@github.com:myint/syntastic-extras.git'
+Plugin 'git@github.com:chase/vim-ansible-yaml'
+Plugin 'git@github.com:bronson/vim-trailing-whitespace'
+Plugin 'git@github.com:elzr/vim-json'
+Plugin 'git@github.com:hashivim/vim-hashicorp-tools'
+Plugin 'thoughtbot/vim-rspec'
+"Plugin 'vim-ruby/vim-ruby'
+Plugin 'tpope/vim-surround'
+"PELL PLUGINS
+"Plugin 'christoomey/vim-tmux-navigator'
+"Plugin 'kien/ctrlp.vim'
+"Plugin 'kchmck/vim-coffee-script'
+"Plugin 'tpope/vim-commentary'
+"Plugin 'tpope/vim-bundler'
+"Plugin 'tpope/vim-rails'
+"Plugin 'tpope/vim-endwise'
+"Plugin 'luochen1990/rainbow'
+"Plugin 'fatih/vim-go'
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+
+set number
+set wildmenu
+set autoindent
+set noerrorbells
+set noswapfile
+set showmatch
+set hidden
+
+set foldmethod=marker
+set expandtab
+set sw=2 ts=2
+set mat=2
+set cmdheight=2
+" save cursor position in file when closing/reopening
+
+" sexy colors
+colorscheme delek
+syntax on
+filetype on
+"au BufNewFile,BufRead *.tf set filetype=json
+
+set hlsearch
+hi Search ctermbg=red
+hi Search ctermfg=black
+
+let g:ansible_options = {'ignore_blank_lines': 0}
+" remember cursor position in files
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+        \| exe "normal! g'\"" | endif
+endif
+hi Search ctermbg=darkgrey
+hi Search ctermfg=red
+
+"ansible
+let g:ansible_options = {'ignore_blank_lines': 1}

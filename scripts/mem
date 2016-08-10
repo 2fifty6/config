@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Mem
+TOTAL=`free | grep Mem | awk '{print $2}'`
+USED=`free | grep Mem | awk '{print $3}'`
+FREE=`free | grep Mem | awk '{print $4}'`
+
+# buffers/cache
+UNAVAIL=`free | grep '\-/+' | awk '{print $3}'`
+AVAIL=`free | grep '\-/+' | awk '{print $4}'`
+
+# Swap
+SWAP=`free | grep Swap | awk '{print $3}'`
+
+CACHED=$(( $AVAIL - $FREE ))
+
+# Do it!
+printf "||  Available:    %2d%%  ||  Cached: %2d%%  ||\n"  $((100*AVAIL/TOTAL))    $((100*CACHED/TOTAL))
+printf "||  Unavailable:  %2d%%  ||  Used:   %2d%%  ||\n"  $((100*UNAVAIL/TOTAL))  $((100*USED/TOTAL))
+if [[ $SWAP -ne 0 ]]; then
+  printf "||  Swapped:      %2d%%  ||\n"  $((100*SWAP/TOTAL))
+fi
