@@ -3,6 +3,10 @@ eval `ssh-agent` >/dev/null 2>&1
 find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
 find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
 
+# Oh My ZSH!
+[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
+. ~/.oh-my-zshrc
+
 # OS X
 if [[ `uname` == "Darwin" ]]; then
   alias ls='ls -G --color=auto'
@@ -14,12 +18,8 @@ if [[ `uname` == "Darwin" ]]; then
   [[ -z "`which brew`" ]] && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   # Various Plugins
   [[ ! -e /usr/local/share/zsh/site-functions/_aws ]] && (brew install awscli >/dev/null 2>&1 || brew link --overwrite awscli)
+  . /usr/local/share/zsh/site-functions/_aws 2>/dev/null
 fi
-
-# Oh My ZSH!
-. /usr/local/share/zsh/site-functions/_aws 2>/dev/null
-. ~/.oh-my-zshrc
-[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
 
 # Ctrl-S is a pain in the ass
 stty -ixon
@@ -218,6 +218,7 @@ function ahostselect (){
 alias ta="terraform remote pull && terraform apply && terraform remote push"
 alias td="terraform remote pull && terraform destroy -force && terraform remote push"
 alias tp="terraform plan"
+alias to="terraform output"
 
 # CONVENIENCE
 function fromnow (){
