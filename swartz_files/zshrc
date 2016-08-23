@@ -93,8 +93,13 @@ alias ls='ls -G'
 alias watch='watch --color'
 alias zedit="vim ~/.zshrc"
 alias zrefresh="source ~/.zshrc"
-alias st="git status"
 alias ohmyzedit="vim ~/.oh-my-zshrc"
+# Git
+alias st="git status"
+alias stt="git status -s"
+alias pull="git pull --all"
+alias fetch="git fetch --all"
+
 function grepv () { grep "$@" | grep -v --color grep }
 function psgrep () { ps aux | grep "$@" | grep -v --color grep }
 function shdo () {
@@ -219,6 +224,8 @@ alias ta="terraform remote pull && terraform apply && terraform remote push"
 alias td="terraform remote pull && terraform destroy -force && terraform remote push"
 alias tp="terraform plan"
 alias to="terraform output"
+alias tg="terraform get -update"
+alias tfrm='rm **/.terraform/terraform.tfstate'
 
 # CONVENIENCE
 function fromnow (){
