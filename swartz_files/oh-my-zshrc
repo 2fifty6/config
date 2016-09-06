@@ -52,18 +52,18 @@ export ZSH=~/.oh-my-zsh
 plugins=(
   git
   autojump
-  brew
+#  brew
   aws
-  bundler
-  rake
-  rbenv
-  knife
-  knife_ssh
+#  bundler
+#  rake
+#  rbenv
+#  knife
+#  knife_ssh
   kitchen
 #  osx
 #  docker
 #  vagrant
-  packer
+#  packer
   terraform
 #  pip
 )
