@@ -1,3 +1,5 @@
+alias kitchenedit="vim $0"
+alias kitchenrefresh="source $0"
 function rekitchen (){
   kitchen destroy $* && kitchen converge $*
 }

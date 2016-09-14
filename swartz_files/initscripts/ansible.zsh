@@ -1,4 +1,5 @@
-
+alias ansibleedit="vim $0"
+alias ansiblerefresh="source $0"
 
 alias ahost='cat ~/.ansible.hosts'
 alias ahostedit='vim ~/.ansible.hosts'

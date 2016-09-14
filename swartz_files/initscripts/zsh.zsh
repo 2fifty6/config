@@ -1,3 +1,6 @@
+alias zshedit="vim $0"
+alias zshrefresh="source $0"
+
 # keyboard behavior# {{{
 bindkey ';5D' backward-word
 bindkey ';5C' forward-word

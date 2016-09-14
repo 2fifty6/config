@@ -1,3 +1,5 @@
+alias vagrantedit="vim $0"
+alias vagrantrefresh="source $0"
 function vid (){
   IDS="`vagrant global-status | grep virtualbox | sed 's/\(.*\)virtualbox.*/\1/'`"
   if [[ ! -z "$1" || `echo $IDS | wc -l` -gt 1 ]]; then

@@ -20,6 +20,7 @@ Plugin 'git@github.com:hashivim/vim-hashicorp-tools'
 Plugin 'thoughtbot/vim-rspec'
 "Plugin 'vim-ruby/vim-ruby'
 Plugin 'tpope/vim-surround'
+Plugin 'ngmy/vim-rubocop'
 "PELL PLUGINS
 "Plugin 'christoomey/vim-tmux-navigator'
 "Plugin 'kien/ctrlp.vim'
@@ -44,13 +45,11 @@ set noerrorbells
 set noswapfile
 set showmatch
 set hidden
-
 set foldmethod=marker
 set expandtab
 set sw=2 ts=2
 set mat=2
 set cmdheight=2
-" save cursor position in file when closing/reopening
 
 " sexy colors
 colorscheme delek
@@ -62,7 +61,6 @@ set hlsearch
 hi Search ctermbg=red
 hi Search ctermfg=black
 
-let g:ansible_options = {'ignore_blank_lines': 0}
 " remember cursor position in files
 if has("autocmd")
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")

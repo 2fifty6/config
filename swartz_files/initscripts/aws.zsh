@@ -1,4 +1,6 @@
 # AWS
+alias awsedit="vim $0"
+alias awsrefresh="source $0"
 [[ ! -e /usr/local/share/zsh/site-functions/_envselect ]] &&
   cat > /usr/local/share/zsh/site-functions/_envselect <<EOF
 #compdef envselect
@@ -35,6 +37,9 @@ function ec2-jqpublicip(){
   jq ".Reservations[].Instances[].PublicIpAddress"
 }
 
+function ec2-byname (){
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running"
+}
 function ec2-ipbyname (){
   aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
     ec2-jqprivateip |
