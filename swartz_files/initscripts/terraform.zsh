@@ -9,3 +9,4 @@ alias tp="terraform plan"
 alias to="terraform output"
 alias tg="terraform get -update"
 alias tfrm='rm **/.terraform/terraform.tfstate'
+alias tfrmrf='rm -rf **/.terraform'
