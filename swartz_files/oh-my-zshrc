@@ -52,7 +52,7 @@ export ZSH=~/.oh-my-zsh
 plugins=(
   git
   autojump
-#  brew
+  brew
   aws
 #  bundler
 #  rake
@@ -63,9 +63,9 @@ plugins=(
 #  osx
 #  docker
 #  vagrant
-#  packer
+  packer
   terraform
-#  pip
+  pip
 )
 # User configuration
 

@@ -4,7 +4,7 @@
 #find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
 
 # Oh My ZSH!
-[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
+#[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
 . ~/.oh-my-zshrc
 
 # OS X
