@@ -1,7 +1,7 @@
 # ssh agent forwarding
-#eval `ssh-agent` >/dev/null 2>&1
-#find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
-#find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
+eval `ssh-agent` >/dev/null 2>&1
+find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
+find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
 
 # Oh My ZSH!
 . ~/.oh-my-zshrc
