@@ -107,6 +107,6 @@
         accept_hostkey=yes
 
     - name: install vim plugins
-      shell: 'vim +PluginInstal +qall'
+      shell: 'vim +PluginInstall +qall'
 
 # vim:ft=ansible
