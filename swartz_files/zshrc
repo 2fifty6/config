@@ -4,7 +4,6 @@
 #find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
 
 # Oh My ZSH!
-#[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
 . ~/.oh-my-zshrc
 
 # OS X
@@ -32,7 +31,6 @@ PATH=$PATH:/usr/local/bin:/usr/local/scripts:~/scripts
 
 # include any bashrc stuff we don't want to version control
 [[ -e ~/.initSwaaatz ]] && source ~/.initSwaaatz
-[[ -e ~/.initRean ]] && source ~/.initRean
 [[ -e ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh ]] && source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh
 
 for script in `ls ~/.dotfiles/initscripts`; do source ~/.dotfiles/initscripts/$script; done

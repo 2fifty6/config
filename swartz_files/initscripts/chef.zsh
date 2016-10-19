@@ -1,5 +1,6 @@
 alias kitchenedit="vim $0"
 alias kitchenrefresh="source $0"
+[[ ! -e ~/.oh-my-zsh/custom/plugins/kitchen ]] && git clone https://github.com/pelletiermaxime/test-kitchen-zsh-plugin.git ~/.oh-my-zsh/custom/plugins/kitchen
 function rekitchen (){
   kitchen destroy $* && kitchen converge $*
 }
