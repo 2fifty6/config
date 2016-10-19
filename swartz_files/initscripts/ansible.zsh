@@ -7,9 +7,9 @@ alias ahost='cat ~/.ansible.hosts'
 alias ahostedit='vim ~/.ansible.hosts'
 function ahostselect (){
   if [[ -z $1 ]]; then
-    ls -l /Users/dswartz/.ansible.hosts
+    ls -l ~/.ansible.hosts
   else
-    ln -sf /Users/dswartz/.ansible.hosts.$1 /Users/dswartz/.ansible.hosts
+    ln -sf $HOME/.ansible.hosts.$1 $HOME/.ansible.hosts
   fi
 }
 # For Reference:

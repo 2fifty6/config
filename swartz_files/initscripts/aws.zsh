@@ -1,6 +1,8 @@
 # AWS
 alias awsedit="vim $0"
 alias awsrefresh="source $0"
+
+[[ ! -e ~/.dotfiles/aws ]] && mkdir -p ~/.dotfiles/aws
 [[ ! -e /usr/local/share/zsh/site-functions/_envselect ]] &&
   cat > /usr/local/share/zsh/site-functions/_envselect <<EOF
 #compdef envselect
@@ -10,11 +12,11 @@ EOF
 
 function envselect(){
   if [[ -z $1 ]]; then
-    ls -l /Users/dswartz/.autoenv.zsh
+    ls -l ~/.autoenv.zsh
   else
-    AUTOENV_PATH=/Users/dswartz/.dotfiles/aws/$1/.autoenv.zsh
+    AUTOENV_PATH=~/.dotfiles/aws/$1/.autoenv.zsh
     if [[ -e $AUTOENV_PATH ]]; then
-      ln -sf $AUTOENV_PATH /Users/dswartz/.autoenv.zsh
+      ln -sf $AUTOENV_PATH ~/.autoenv.zsh
       source ~/.autoenv.zsh
     else
       echo "No match for $AUTOENV_PATH"
