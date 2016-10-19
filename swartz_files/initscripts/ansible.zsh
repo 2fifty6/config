@@ -1,6 +1,8 @@
 alias ansibleedit="vim $0"
 alias ansiblerefresh="source $0"
 
+[[ ! -e ~/.ansible.hosts ]] && touch ~/.ansible.hosts
+export ANSIBLE_INVENTORY=~/.ansible.hosts
 alias ahost='cat ~/.ansible.hosts'
 alias ahostedit='vim ~/.ansible.hosts'
 function ahostselect (){
