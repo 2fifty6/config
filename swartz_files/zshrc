@@ -69,3 +69,5 @@ function bastion(){
     ssh bastion -t "ssh $1"
   fi
 }
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

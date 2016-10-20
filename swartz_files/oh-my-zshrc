@@ -51,21 +51,21 @@ export ZSH=~/.oh-my-zsh
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
+  aws
   autojump
   brew
-  aws
+  pip
+  terraform
 #  bundler
 #  rake
 #  rbenv
 #  knife
 #  knife_ssh
-  kitchen
+#  kitchen
 #  osx
 #  docker
 #  vagrant
-  packer
-  terraform
-  pip
+#  packer
 )
 # User configuration
 
