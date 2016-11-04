@@ -3,12 +3,13 @@ alias awsedit="vim $0"
 alias awsrefresh="source $0"
 
 [[ ! -e ~/.dotfiles/aws ]] && mkdir -p ~/.dotfiles/aws
-[[ ! -e /usr/local/share/zsh/site-functions/_envselect ]] &&
+[[ ! -x /usr/local/share/zsh/site-functions/_envselect ]] &&
   cat > /usr/local/share/zsh/site-functions/_envselect <<EOF
 #compdef envselect
 compadd \$(command ls -1 ~/.dotfiles/aws 2>/dev/null --color=none |
   sed -e 's/ /\\\\ /g' -e 's/.*aws://g')
-EOF
+EOF &&
+  chmod +x /usr/local/share/zsh/site-functions/_envselect
 
 function envselect(){
   if [[ -z $1 ]]; then
@@ -29,9 +30,17 @@ function awsdefault (){
   export AWS_DEFAULT_PROFILE=$1
 }
 
+# ELB
+function elb-getstatebyname(){
+  ELB_NAME=$1
+  aws elb describe-instance-health --load-balancer-name $ELB_NAME | jq '.InstanceStates[].State'
+}
 ## EC2
 alias describe-ec2='aws ec2 describe-instances --instance-ids '
 alias ec2ids="aws ec2 describe-instances --instance-ids"
+function ec2-jqname(){
+  jq ".Reservations[].Instances[]"
+}
 function ec2-jqprivateip(){
   jq ".Reservations[].Instances[].NetworkInterfaces[].PrivateIpAddresses[0].PrivateIpAddress"
 }
@@ -41,6 +50,11 @@ function ec2-jqpublicip(){
 
 function ec2-byname (){
   aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running"
+}
+function ec2-namebyid (){
+  aws ec2 describe-instances --instance-ids $1 |
+    ec2-jqname |
+    sed 's/"//g'
 }
 function ec2-ipbyname (){
   aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
