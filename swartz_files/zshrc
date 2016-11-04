@@ -3,9 +3,6 @@ eval `ssh-agent` >/dev/null 2>&1
 find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
 find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
 
-# Oh My ZSH!
-. ~/.oh-my-zshrc
-
 # OS X
 if [[ `uname` == "Darwin" ]]; then
   alias ls='ls -G '
@@ -22,9 +19,6 @@ fi
 
 # Ctrl-S is a pain in the ass
 stty -ixon
-
-source ~/.zprompt
-setprompt
 
 #--------------------------------------------------------------------------------------
 PATH=$PATH:/usr/local/bin:/usr/local/scripts:~/scripts
@@ -71,3 +65,8 @@ function bastion(){
 }
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# Oh My ZSH!
+. ~/.oh-my-zshrc
+
+source ~/.zprompt
+setprompt
