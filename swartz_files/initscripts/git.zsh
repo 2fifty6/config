@@ -1,6 +1,7 @@
 # GIT
 alias gitedit="vim $0"
 alias gitrefresh="source $0"
+alias gi="git"
 alias st="git status"
 alias stt="git status -s"
 alias pull="git pull --all"
