@@ -1,1 +1,1 @@
-source ~/.initBanner.sh
+[[ -e ~/.initBanner ]] && source ~/.initBanner.sh
