@@ -50,11 +50,11 @@ export ZSH=~/.oh-my-zsh
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+#  git
   aws
   autojump
-  brew
-  pip
+#  brew
+#  pip
   terraform
 #  bundler
 #  rake

@@ -1,6 +1,10 @@
 # GIT
+alias gti=git
+alias got=git
 alias gitedit="vim $0"
 alias gitrefresh="source $0"
+alias gb="git branch"
+alias gbr="git branch -r"
 alias gi="git"
 alias st="git status"
 alias stt="git status -s"
@@ -8,7 +12,7 @@ alias pull="git pull --all"
 alias fetch="git fetch --all"
 
 function modall(){
-  FILES="$(git status -s| sed 's/^R .*-> //'|sed 's/^[ ]*[A-Z]*[ ]*//'|sort|uniq)"
+  FILES="$(git status -s| sed 's/^R .*-> //'|sed 's/^[ ]*[A-Z]*[ ]*//'|sort|uniq|grep -v '??')"
 	if [[ ! -z "$@" ]]; then
 		FILES="$(echo $FILES | grep --color=no "$@")"
 	fi
@@ -28,7 +32,18 @@ function mod (){
     vim $(echo $FILES)
 	fi
 }
-
+function giturl(){
+  git config -l | grep url | sed 's/.*:\/\///'
+}
+function gprev (){
+  currbranch=$(git branch | grep '*' --color=no | awk '{print $2}')
+  git diff origin/$currbranch..$currbranch
+}
+function gmprev (){
+  currbranch=$(git branch | grep '*' --color=no | awk '{print $2}')
+  mbranch=`echo $currbranch | sed -e 's/test/dev/' -e 's/prod/test/'`
+  git diff $currbranch..$mbranch
+}
 [[ ! -e /usr/local/share/zsh/site-functions/_2fifty6 ]] &&
   cat > /usr/local/share/zsh/site-functions/_2fifty6 <<EOF
 #compdef 2fifty6

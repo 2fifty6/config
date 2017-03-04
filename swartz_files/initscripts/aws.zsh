@@ -8,8 +8,7 @@ alias awsrefresh="source $0"
 #compdef envselect
 compadd \$(command ls -1 ~/.dotfiles/aws 2>/dev/null --color=none |
   sed -e 's/ /\\\\ /g' -e 's/.*aws://g')
-EOF &&
-  chmod +x /usr/local/share/zsh/site-functions/_envselect
+EOF
 
 function envselect(){
   if [[ -z $1 ]]; then
@@ -31,15 +30,36 @@ function awsdefault (){
 }
 
 # ELB
+function elb-jqname(){
+  jq '.LoadBalancerDescriptions[].LoadBalancerName' | sed 's/"//g'
+}
+function elb-jqstate(){
+  jq '.InstanceStates[].State'
+}
+function elb-jqhealth(){
+  jq '.LoadBalancerDescriptions[].HealthCheck.Target'
+}
 function elb-getstatebyname(){
   ELB_NAME=$1
-  aws elb describe-instance-health --load-balancer-name $ELB_NAME | jq '.InstanceStates[].State'
+  aws elb describe-instance-health --load-balancer-name $ELB_NAME | elb-jqstate
+}
+
+function elb-gethealthbyname(){
+  ELB_NAME=$1
+  aws elb describe-load-balancers --load-balancer-name $ELB_NAME | elb-jqhealth
+}
+function lselb(){
+  aws elb describe-load-balancers | elb-jqname
+}
+function rmelb(){
+  ELB_NAME=$1
+  aws elb delete-load-balancer --load-balancer-name $ELB_NAME
 }
 ## EC2
 alias describe-ec2='aws ec2 describe-instances --instance-ids '
 alias ec2ids="aws ec2 describe-instances --instance-ids"
 function ec2-jqname(){
-  jq ".Reservations[].Instances[]"
+  jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value' | sed 's/"//g'
 }
 function ec2-jqprivateip(){
   jq ".Reservations[].Instances[].NetworkInterfaces[].PrivateIpAddresses[0].PrivateIpAddress"
@@ -98,4 +118,19 @@ function rmkeypair (){
   [[ ! -z $2 ]] && REGION=$2 || REGION=us-east-1
   aws ec2 delete-key-pair --key-name $KEY_NAME --region $REGION &&
     rm ~/.ssh/$KEY_NAME.pem
+}
+# asg
+function rmasg () {
+  ASG_NAME=$1
+  aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $ASG_NAME --force-delete
+}
+function lsasg () {
+  aws autoscaling describe-auto-scaling-groups|jq '.AutoScalingGroups[].AutoScalingGroupName' | sed 's/"//g'
+}
+function rmlc () {
+  LC_NAME=$1
+  aws autoscaling delete-launch-configuration --launch-configuration-name $LC_NAME
+}
+function lslc () {
+  aws autoscaling describe-launch-configurations  | jq '.LaunchConfigurations[].LaunchConfigurationName' | sed 's/"//g'
 }
