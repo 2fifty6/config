@@ -11,3 +11,5 @@ ln -sf $CURRDIR/swartz_files/oh-my-zshrc ~/.oh-my-zshrc
 
 mkdir -p ~/.dotfiles
 [[ ! -L ~/.dotfiles/initscripts ]] && ln -sf $CURRDIR/swartz_files/initscripts ~/.dotfiles/initscripts
+
+[[ ! -e ~/.vim/bundle/Vundle.vim ]] && git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
