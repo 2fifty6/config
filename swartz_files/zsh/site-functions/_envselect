@@ -1,0 +1,3 @@
+#compdef envselect
+compadd $(command ls -1 ~/.dotfiles/aws 2>/dev/null --color=none |
+  sed -e 's/ /\\ /g' -e 's/.*aws://g')

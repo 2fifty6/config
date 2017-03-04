@@ -1,7 +1,15 @@
 # ssh agent forwarding
-eval `ssh-agent` >/dev/null 2>&1
-find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
-find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
+#eval `ssh-agent` >/dev/null 2>&1
+#find ~/.ssh -type f -name '*_rsa' | xargs ssh-add > /dev/null 2>&1
+#find ~/.ssh -type f -name '*.pem' | xargs ssh-add > /dev/null 2>&1
+# Oh My ZSH!
+if [[ -z $OH_MY_ZSHED ]]; then
+  . ~/.oh-my-zshrc
+  export OH_MY_ZSHED="done"
+fi
+
+source ~/.zprompt
+setprompt
 
 # OS X
 if [[ `uname` == "Darwin" ]]; then
@@ -34,6 +42,9 @@ alias ltr='ls -ltr'
 function grepv () { grep "$@" | grep -v --color grep }
 function psgrep () { ps aux | grep "$@" | grep -v --color grep }
 function fromnow (){ date -v+$1 "+%Y-%m-%d" }
+function suniq(){
+  sort | uniq <&3
+}
 
 function shdo () {
   FULLCMD=($*)
@@ -56,17 +67,4 @@ function shdo () {
   fi
 }
 
-function bastion(){
-  if [[ -z "$1" ]]; then
-    ssh bastion
-  else
-    ssh bastion -t "ssh $1"
-  fi
-}
-
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-# Oh My ZSH!
-. ~/.oh-my-zshrc
-
-source ~/.zprompt
-setprompt
