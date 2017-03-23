@@ -1,24 +1,30 @@
+alias zpromptedit="vim $0"
+alias zpromptrefresh="source $0"
+
 function update_gitprompt {
 	COMMITS=""
 	BEHIND_HEAD=""
 	NUM_AHEAD="$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)"
 	NUM_BEHIND="$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)"
-	if [[ $NUM_AHEAD -ne 0 && $NUM_BEHIND -eq 0 ]]; then
-		if [[ $NUM_AHEAD -eq 1 ]]; then
-			COMMITS="¹"
-		elif [[ $NUM_AHEAD -eq 2 ]]; then
-			COMMITS="²"
-		elif [[ $NUM_AHEAD -eq 3 ]]; then
-			COMMITS="³"
-		else
-			COMMITS="¨"
-		fi
-	elif [[ $NUM_BEHIND -ne 0 && $NUM_AHEAD -eq 0 ]]; then
-		BEHIND_HEAD="«"
-	elif [[ $NUM_AHEAD -ne 0 && $NUM_BEHIND -ne 0 ]]; then
-		BEHIND_HEAD="«"
-		COMMITS="»"
-	fi
+  SUPERSCRIPTS="⁰¹²³⁴⁵⁶⁷⁸⁹"
+  SUBSCRIPTS="₀₁₂₃₄₅₆₇₈₉"
+	if [[ $NUM_AHEAD -ne 0  ]]; then
+    until [[ $NUM_AHEAD -eq 0 ]]; do
+      NUM_AHEAD_DIGIT=$((NUM_AHEAD%10))
+      NUM_AHEAD=$((NUM_AHEAD/10))
+      COMMITS="${SUPERSCRIPTS:$NUM_AHEAD_DIGIT:1}${COMMITS}"
+    done
+    COMMITS="⁺${COMMITS}"
+  fi
+	if [[ $NUM_BEHIND -ne 0 ]]; then
+    BEHIND_HEAD="⁻${SUPERSCRIPTS:$NUM_BEHIND:1}"
+  fi
+  #⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ
+  #₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓ
+
+#	if [[ $NUM_BEHIND -ne 0; then
+#		BEHIND_HEAD="«"
+#  fi
 	zstyle ':vcs_info:*' formats "$PR_WHITE$BEHIND_HEAD%u%b%c$COMMITS$PR_NO_COLOUR"
 	zstyle ':vcs_info:*' stagedstr "$PR_GREEN*"
 	zstyle ':vcs_info:*' unstagedstr "$PR_RED"
