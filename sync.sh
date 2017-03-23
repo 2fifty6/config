@@ -14,6 +14,8 @@ mkdir -p ~/.dotfiles
 
 [[ ! -L ~/scripts ]] && ln -sf $CURRDIR/scripts ~/scripts
 
+[[ ! -e ~/.vim/bundle/Vundle.vim ]] && git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
 zsh_dir=/usr/local/share/zsh/site-functions
 for completion in `ls $CURRDIR/swartz_files/zsh/site-functions`; do
   [[ ! -L $zsh_dir/$completion ]] &&

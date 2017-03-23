@@ -4,7 +4,7 @@ alias awsrefresh="source $0"
 
 [[ ! -e ~/.dotfiles/aws ]] && mkdir -p ~/.dotfiles/aws
 [[ ! -x /usr/local/share/zsh/site-functions/_envselect ]] &&
-  cat > /usr/local/share/zsh/site-functions/_envselect <<EOF
+  sudo cat > /usr/local/share/zsh/site-functions/_envselect <<EOF
 #compdef envselect
 compadd \$(command ls -1 ~/.dotfiles/aws 2>/dev/null --color=none |
   sed -e 's/ /\\\\ /g' -e 's/.*aws://g')
