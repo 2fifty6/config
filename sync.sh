@@ -12,6 +12,8 @@ ln -sf $CURRDIR/swartz_files/oh-my-zshrc ~/.oh-my-zshrc
 mkdir -p ~/.dotfiles
 [[ ! -L ~/.dotfiles/initscripts ]] && ln -sf $CURRDIR/swartz_files/initscripts ~/.dotfiles/initscripts
 
+[[ ! -L ~/scripts ]] && ln -sf $CURRDIR/scripts ~/scripts
+
 zsh_dir=/usr/local/share/zsh/site-functions
 for completion in `ls $CURRDIR/swartz_files/zsh/site-functions`; do
   [[ ! -L $zsh_dir/$completion ]] &&
