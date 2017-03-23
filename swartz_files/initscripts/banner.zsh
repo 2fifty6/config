@@ -1,1 +1,1 @@
-[[ -e ~/.initBanner ]] && source ~/.initBanner.sh
+source ~/.initBanner.sh 2>/dev/null
