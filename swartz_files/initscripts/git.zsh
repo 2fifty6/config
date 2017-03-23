@@ -32,6 +32,12 @@ function mod (){
     vim $(echo $FILES)
 	fi
 }
+
+function pullall(){
+  currbranch=$(git branch | grep '*' --color=no | awk '{print $2}')
+  for branch in `git branch | sed 's/\*//'`; do echo; echo $branch; git co $branch; git pull; done
+  git co $currbranch
+}
 function giturl(){
   git config -l | grep url | sed 's/.*:\/\///'
 }
