@@ -12,6 +12,8 @@
   cp = cherry-pick
   lo = log
   b = branch
+  ad = add
+  dd = add
 [core]
   pager = less -+$LESS -R
   editor = vim
