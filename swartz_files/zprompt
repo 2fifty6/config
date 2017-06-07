@@ -3,9 +3,8 @@ alias zpromptrefresh="source $0"
 
 function update_gitprompt {
 	COMMITS=""
-	BEHIND_HEAD=""
-	NUM_AHEAD="$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)"
-	NUM_BEHIND="$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)"
+	NUM_AHEAD=$(git rev-list `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`..HEAD 2>/dev/null | wc -l)
+	NUM_BEHIND=$(git rev-list HEAD..`git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null` 2>/dev/null | wc -l)
   SUPERSCRIPTS="⁰¹²³⁴⁵⁶⁷⁸⁹"
   SUBSCRIPTS="₀₁₂₃₄₅₆₇₈₉"
 	if [[ $NUM_AHEAD -ne 0  ]]; then
@@ -17,15 +16,17 @@ function update_gitprompt {
     COMMITS="⁺${COMMITS}"
   fi
 	if [[ $NUM_BEHIND -ne 0 ]]; then
-    BEHIND_HEAD="⁻${SUPERSCRIPTS:$NUM_BEHIND:1}"
+    until [[ $NUM_BEHIND -eq 0 ]]; do
+      NUM_BEHIND_DIGIT=$((NUM_BEHIND%10))
+      NUM_BEHIND=$((NUM_BEHIND/10))
+      COMMITS="${SUPERSCRIPTS:$NUM_BEHIND_DIGIT:1}${COMMITS}"
+    done
+    COMMITS="⁻${COMMITS}"
   fi
   #⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ
   #₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓ
 
-#	if [[ $NUM_BEHIND -ne 0; then
-#		BEHIND_HEAD="«"
-#  fi
-	zstyle ':vcs_info:*' formats "$PR_WHITE$BEHIND_HEAD%u%b%c$COMMITS$PR_NO_COLOUR"
+	zstyle ':vcs_info:*' formats "$PR_WHITE%u%b%c$COMMITS$PR_NO_COLOUR"
 	zstyle ':vcs_info:*' stagedstr "$PR_GREEN*"
 	zstyle ':vcs_info:*' unstagedstr "$PR_RED"
 	zstyle ':vcs_info:*' check-for-changes true

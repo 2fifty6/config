@@ -31,13 +31,13 @@ function awsdefault (){
 
 # ELB
 function elb-jqname(){
-  jq '.LoadBalancerDescriptions[].LoadBalancerName' | sed 's/"//g'
+  jq -r '.LoadBalancerDescriptions[].LoadBalancerName'
 }
 function elb-jqstate(){
-  jq '.InstanceStates[].State'
+  jq -r '.InstanceStates[].State'
 }
 function elb-jqhealth(){
-  jq '.LoadBalancerDescriptions[].HealthCheck.Target'
+  jq -r '.LoadBalancerDescriptions[].HealthCheck.Target'
 }
 function elb-getstatebyname(){
   ELB_NAME=$1
@@ -56,55 +56,68 @@ function rmelb(){
   aws elb delete-load-balancer --load-balancer-name $ELB_NAME
 }
 ## EC2
+export RUNNING_INSTANCE_FILTER="Name=instance-state-name,Values=running"
+
 alias describe-ec2='aws ec2 describe-instances --instance-ids '
 alias ec2ids="aws ec2 describe-instances --instance-ids"
+function ec2-jqid(){
+  jq -r '.Reservations[].Instances[].InstanceId'
+}
 function ec2-jqname(){
-  jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value' | sed 's/"//g'
+  jq -r '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'
 }
 function ec2-jqprivateip(){
-  jq ".Reservations[].Instances[].NetworkInterfaces[].PrivateIpAddresses[0].PrivateIpAddress"
+  jq -r ".Reservations[].Instances[].NetworkInterfaces[].PrivateIpAddresses[0].PrivateIpAddress"
 }
 function ec2-jqpublicip(){
-  jq ".Reservations[].Instances[].PublicIpAddress"
+  jq -r ".Reservations[].Instances[].PublicIpAddress"
+}
+function ec2-jqvolumes(){
+  jq -r '.Reservations[].Instances[].BlockDeviceMappings[] | .DeviceName + "\t" + .Ebs.VolumeId'
+}
+function ec2-jqvolumeids(){
+  jq -r '.Reservations[].Instances[].BlockDeviceMappings[].Ebs.VolumeId'
 }
 
 function ec2-byname (){
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running"
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" $RUNNING_INSTANCE_FILTER
 }
 function ec2-namebyid (){
   aws ec2 describe-instances --instance-ids $1 |
-    ec2-jqname |
-    sed 's/"//g'
+    ec2-jqname
+}
+function ec2-idbyname (){
+  ec2-byname $1 |
+    ec2-jqid
 }
 function ec2-ipbyname (){
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
-    ec2-jqprivateip |
-    sed 's/"//g'
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" $RUNNING_INSTANCE_FILTER |
+    ec2-jqprivateip
 }
 function ec2-ipbyvpc (){
-  aws ec2 describe-instances --filters "Name=vpc-id,Values=$1" "Name=instance-state-name,Values=running" |
-    ec2-jqprivateip |
-    sed 's/"//g'
+  aws ec2 describe-instances --filters "Name=vpc-id,Values=$1" $RUNNING_INSTANCE_FILTER |
+    ec2-jqprivateip
 }
 function ec2-ipbynamevpc (){
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=vpc-id,Values=$2" "Name=instance-state-name,Values=running" |
-    ec2-jqprivateip |
-    sed 's/"//g'
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=vpc-id,Values=$2" $RUNNING_INSTANCE_FILTER |
+    ec2-jqprivateip
 }
 function ec2-publicipbyname (){
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=instance-state-name,Values=running" |
-    ec2-jqpublicip |
-    sed 's/"//g'
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" $RUNNING_INSTANCE_FILTER |
+    ec2-jqpublicip
 }
 function ec2-publicipbynamevpc (){
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=vpc-id,Values=$2" "Name=instance-state-name,Values=running" |
-    ec2-jqpublicip |
-    sed 's/"//g'
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" "Name=vpc-id,Values=$2" $RUNNING_INSTANCE_FILTER |
+    ec2-jqpublicip
+}
+function ec2-namebyip (){
+  aws ec2 describe-instances --filters "Name=private-ip-address,Values=$1" $RUNNING_INSTANCE_FILTER | jq -r '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'
 }
 
-function ec2-namebyip (){
-  aws ec2 describe-instances --filters "Name=private-ip-address,Values=$1" "Name=instance-state-name,Values=running" | jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'|sed 's/"//g'
+function ec2-snapshotbyid (){
+  aws ec2 describe-snapshots --snapshot-ids $*
 }
+
 # keypairs
 function mkkeypair (){
   KEY_NAME=$1
@@ -125,12 +138,24 @@ function rmasg () {
   aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $ASG_NAME --force-delete
 }
 function lsasg () {
-  aws autoscaling describe-auto-scaling-groups|jq '.AutoScalingGroups[].AutoScalingGroupName' | sed 's/"//g'
+  aws autoscaling describe-auto-scaling-groups|jq -r '.AutoScalingGroups[].AutoScalingGroupName'
 }
 function rmlc () {
   LC_NAME=$1
   aws autoscaling delete-launch-configuration --launch-configuration-name $LC_NAME
 }
 function lslc () {
-  aws autoscaling describe-launch-configurations  | jq '.LaunchConfigurations[].LaunchConfigurationName' | sed 's/"//g'
+  aws autoscaling describe-launch-configurations  | jq -r '.LaunchConfigurations[].LaunchConfigurationName'
+}
+# iam
+function iam-instance-profile (){
+  aws iam get-instance-profile --instance-profile-name $1
+}
+function iam-jqprofilerole (){
+  jq -r '.InstanceProfile.Roles[].RoleName'
+}
+
+# ALB
+function target-group-health (){
+  aws elbv2 describe-target-health --target-group-arn $1 | jq -r '.TargetHealthDescriptions[].TargetHealth.State'
 }
