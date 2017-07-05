@@ -24,3 +24,4 @@ alias vcmd="vc"
 alias vupall='for VAG in $(vg|grep running| awk "{print $1}"|tr "\n" " "); do vagrant up $VAG; done'
 alias vhaltall='for VAG in $(vg|grep running|awk "{print $1}"|tr "\n" " "); do vagrant halt $VAG; done'
 alias vpall='for VAG in $(vg|grep running|awk "{print $1}"| tr "\n" " "); do vagrant provision $VAG; done'
+alias vdall='for VAG in $(vg|grep running|awk "{print $1}"| tr "\n" " "); do vagrant destroy $VAG; done'

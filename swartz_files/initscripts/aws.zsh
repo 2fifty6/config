@@ -29,6 +29,13 @@ function awsdefault (){
   export AWS_DEFAULT_PROFILE=$1
 }
 
+# VPC
+function vpc-byname (){
+  aws ec2 describe-vpcs --filters Name=tag:Name,Values=$1
+}
+function vpc-jqid (){
+  jq -r '.Vpcs[].VpcId'
+}
 # ELB
 function elb-jqname(){
   jq -r '.LoadBalancerDescriptions[].LoadBalancerName'
@@ -94,6 +101,9 @@ function ec2-ipbyname (){
   aws ec2 describe-instances --filters "Name=tag:Name,Values=$1" $RUNNING_INSTANCE_FILTER |
     ec2-jqprivateip
 }
+function ec2-byvpc (){
+  aws ec2 describe-instances --filters "Name=vpc-id,Values=$1" $RUNNING_INSTANCE_FILTER
+}
 function ec2-ipbyvpc (){
   aws ec2 describe-instances --filters "Name=vpc-id,Values=$1" $RUNNING_INSTANCE_FILTER |
     ec2-jqprivateip
@@ -158,4 +168,9 @@ function iam-jqprofilerole (){
 # ALB
 function target-group-health (){
   aws elbv2 describe-target-health --target-group-arn $1 | jq -r '.TargetHealthDescriptions[].TargetHealth.State'
+}
+
+# Cloudwatch
+function cloudwatch-jqmetric(){
+  jq -r '.Metrics[] | .Dimensions[].Value + "-" + .MetricName' | sort
 }

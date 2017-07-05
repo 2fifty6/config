@@ -16,14 +16,20 @@ Plugin 'git@github.com:myint/syntastic-extras.git'
 Plugin 'git@github.com:chase/vim-ansible-yaml'
 Plugin 'git@github.com:bronson/vim-trailing-whitespace'
 Plugin 'git@github.com:elzr/vim-json'
-Plugin 'git@github.com:hashivim/vim-hashicorp-tools'
-Plugin 'thoughtbot/vim-rspec'
+"Plugin 'git@github.com:hashivim/vim-hashicorp-tools'
+Plugin 'git@github.com:hashivim/vim-terraform'
+"Plugin 'git@github.com:juliosueiras/vim-terraform-completion'
+Plugin 'git@github.com:jiangmiao/auto-pairs'
+call vundle#end()            " required
+filetype plugin indent on    " required
+"Plugin 'git@github.com:tpope/vim-surround'
+"Plugin 'git@github.com:kien/ctrlp.vim'
+"Plugin 'rdolgushin/groovy.vim'
+"Plugin 'thoughtbot/vim-rspec'
 "Plugin 'vim-ruby/vim-ruby'
-Plugin 'tpope/vim-surround'
-Plugin 'ngmy/vim-rubocop'
+"Plugin 'ngmy/vim-rubocop'
 "PELL PLUGINS
 "Plugin 'christoomey/vim-tmux-navigator'
-"Plugin 'kien/ctrlp.vim'
 "Plugin 'kchmck/vim-coffee-script'
 "Plugin 'tpope/vim-commentary'
 "Plugin 'tpope/vim-bundler'
@@ -31,31 +37,17 @@ Plugin 'ngmy/vim-rubocop'
 "Plugin 'tpope/vim-endwise'
 "Plugin 'luochen1990/rainbow'
 "Plugin 'fatih/vim-go'
-call vundle#end()            " required
-filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
 " Brief help
-
-set number
-set wildmenu
-set autoindent
-set noerrorbells
-set noswapfile
-set showmatch
-set hidden
-set foldmethod=marker
-set expandtab
-set sw=2 ts=2
-set mat=2
-set cmdheight=2
 
 " sexy colors
 colorscheme delek
 syntax on
 filetype on
 "au BufNewFile,BufRead *.tf set filetype=json
+au BufNewFile,BufRead Jenkinsfile set filetype=groovy
 
 set hlsearch
 hi Search ctermbg=red
@@ -69,5 +61,41 @@ endif
 hi Search ctermbg=darkgrey
 hi Search ctermfg=red
 
-"ansible
+""ansible
 let g:ansible_options = {'ignore_blank_lines': 1}
+"
+"terraform
+" Syntastic Config
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+"
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+""let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
+"
+"" (Optional)Remove Info(Preview) window
+"set completeopt-=preview
+"
+"" (Optional)Hide Info(Preview) window after completions
+"autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+"autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+"
+"" (Optional) Enable terraform plan to be include in filter
+"let g:syntastic_terraform_tffilter_plan = 1
+
+set number
+set wildmenu
+set autoindent
+set noerrorbells
+set noswapfile
+set showmatch
+set hidden
+set expandtab
+set sw=2 ts=2
+set mat=2
+set cmdheight=2
+"folding
+set foldmethod=marker
+nnoremap <tab> zc

@@ -29,7 +29,7 @@ fi
 stty -ixon
 
 #--------------------------------------------------------------------------------------
-PATH=$PATH:/usr/local/bin:/usr/local/scripts:~/scripts
+PATH=/usr/local/bin:$PATH:/usr/local/scripts:~/scripts
 
 # include any bashrc stuff we don't want to version control
 [[ -e ~/.initSwaaatz ]] && source ~/.initSwaaatz
