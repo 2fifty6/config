@@ -99,3 +99,7 @@ set cmdheight=2
 "folding
 set foldmethod=marker
 nnoremap <tab> zc
+"noremap! <C-BS> <C-w>
+"noremap! <C-h> <C-w>
+set backspace=2 " make backspace work like most other apps
+vnoremap <BS> <Left>
