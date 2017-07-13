@@ -42,9 +42,8 @@ alias ltr='ls -ltr'
 function grepv () { grep "$@" | grep -v --color grep }
 function psgrep () { ps aux | grep "$@" | grep -v --color grep }
 function fromnow (){ date -v+$1 "+%Y-%m-%d" }
-function suniq(){
-  sort | uniq <&3
-}
+function suniq(){ sort | uniq <&3 }
+alias vedit='vim ~/.vimrc'
 
 function shdo () {
   FULLCMD=($*)
