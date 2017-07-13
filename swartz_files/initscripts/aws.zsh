@@ -29,40 +29,28 @@ function awsdefault (){
   export AWS_DEFAULT_PROFILE=$1
 }
 
-# VPC
-function vpc-byname (){
-  aws ec2 describe-vpcs --filters Name=tag:Name,Values=$1
+# ALB{{{
+function target-group-health (){
+  aws elbv2 describe-target-health --target-group-arn $1 | jq -r '.TargetHealthDescriptions[].TargetHealth.State'
 }
-function vpc-jqid (){
-  jq -r '.Vpcs[].VpcId'
+# }}}
+# ASG{{{
+function rmasg () {
+  ASG_NAME=$1
+  aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $ASG_NAME --force-delete
 }
-# ELB
-function elb-jqname(){
-  jq -r '.LoadBalancerDescriptions[].LoadBalancerName'
+function lsasg () {
+  aws autoscaling describe-auto-scaling-groups|jq -r '.AutoScalingGroups[].AutoScalingGroupName'
 }
-function elb-jqstate(){
-  jq -r '.InstanceStates[].State'
+function rmlc () {
+  LC_NAME=$1
+  aws autoscaling delete-launch-configuration --launch-configuration-name $LC_NAME
 }
-function elb-jqhealth(){
-  jq -r '.LoadBalancerDescriptions[].HealthCheck.Target'
+function lslc () {
+  aws autoscaling describe-launch-configurations  | jq -r '.LaunchConfigurations[].LaunchConfigurationName'
 }
-function elb-getstatebyname(){
-  ELB_NAME=$1
-  aws elb describe-instance-health --load-balancer-name $ELB_NAME | elb-jqstate
-}
-
-function elb-gethealthbyname(){
-  ELB_NAME=$1
-  aws elb describe-load-balancers --load-balancer-name $ELB_NAME | elb-jqhealth
-}
-function lselb(){
-  aws elb describe-load-balancers | elb-jqname
-}
-function rmelb(){
-  ELB_NAME=$1
-  aws elb delete-load-balancer --load-balancer-name $ELB_NAME
-}
-## EC2
+# }}}
+# EC2{{{
 export RUNNING_INSTANCE_FILTER="Name=instance-state-name,Values=running"
 
 alias describe-ec2='aws ec2 describe-instances --instance-ids '
@@ -127,8 +115,59 @@ function ec2-namebyip (){
 function ec2-snapshotbyid (){
   aws ec2 describe-snapshots --snapshot-ids $*
 }
+# }}}
+# ELB{{{
+function elb-jqname(){
+  jq -r '.LoadBalancerDescriptions[].LoadBalancerName'
+}
+function elb-jqstate(){
+  jq -r '.InstanceStates[].State'
+}
+function elb-jqhealth(){
+  jq -r '.LoadBalancerDescriptions[].HealthCheck.Target'
+}
+function elb-getstatebyname(){
+  ELB_NAME=$1
+  aws elb describe-instance-health --load-balancer-name $ELB_NAME | elb-jqstate
+}
 
-# keypairs
+function elb-gethealthbyname(){
+  ELB_NAME=$1
+  aws elb describe-load-balancers --load-balancer-name $ELB_NAME | elb-jqhealth
+}
+function lselb(){
+  aws elb describe-load-balancers | elb-jqname
+}
+function rmelb(){
+  ELB_NAME=$1
+  aws elb delete-load-balancer --load-balancer-name $ELB_NAME
+}
+# }}}
+# Cloudwatch{{{
+function cloudwatch-jqmetric(){
+  jq -r '.Metrics[] | .Dimensions[].Value + "-" + .MetricName' | sort
+}
+# }}}
+# IAM{{{
+function iam-instance-profile (){
+  aws iam get-instance-profile --instance-profile-name $1
+}
+function iam-jqprofilerole (){
+  jq -r '.InstanceProfile.Roles[].RoleName'
+}
+# }}}
+# RDS
+function rds-instances (){
+  aws rds describe-db-instances $*
+}
+function rds-jqname (){
+  jq -r '.DBInstances[].DBInstanceIdentifier'
+}
+function rds-jqarn (){
+  jq -r '.DBInstances[].DBInstanceArn'
+}
+
+# keypairs{{{
 function mkkeypair (){
   KEY_NAME=$1
   [[ ! -z $2 ]] && REGION=$2 || REGION=us-east-1
@@ -142,35 +181,12 @@ function rmkeypair (){
   aws ec2 delete-key-pair --key-name $KEY_NAME --region $REGION &&
     rm ~/.ssh/$KEY_NAME.pem
 }
-# asg
-function rmasg () {
-  ASG_NAME=$1
-  aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $ASG_NAME --force-delete
+# }}}
+# VPC{{{
+function vpc-byname (){
+  aws ec2 describe-vpcs --filters Name=tag:Name,Values=$1
 }
-function lsasg () {
-  aws autoscaling describe-auto-scaling-groups|jq -r '.AutoScalingGroups[].AutoScalingGroupName'
+function vpc-jqid (){
+  jq -r '.Vpcs[].VpcId'
 }
-function rmlc () {
-  LC_NAME=$1
-  aws autoscaling delete-launch-configuration --launch-configuration-name $LC_NAME
-}
-function lslc () {
-  aws autoscaling describe-launch-configurations  | jq -r '.LaunchConfigurations[].LaunchConfigurationName'
-}
-# iam
-function iam-instance-profile (){
-  aws iam get-instance-profile --instance-profile-name $1
-}
-function iam-jqprofilerole (){
-  jq -r '.InstanceProfile.Roles[].RoleName'
-}
-
-# ALB
-function target-group-health (){
-  aws elbv2 describe-target-health --target-group-arn $1 | jq -r '.TargetHealthDescriptions[].TargetHealth.State'
-}
-
-# Cloudwatch
-function cloudwatch-jqmetric(){
-  jq -r '.Metrics[] | .Dimensions[].Value + "-" + .MetricName' | sort
-}
+#}}}
