@@ -53,8 +53,12 @@ function lslc () {
 # EC2{{{
 export RUNNING_INSTANCE_FILTER="Name=instance-state-name,Values=running"
 
+alias describe-ami='aws ec2 describe-images --image-ids '
 alias describe-ec2='aws ec2 describe-instances --instance-ids '
 alias ec2ids="aws ec2 describe-instances --instance-ids"
+function ami-jqtags(){
+  jq -r '.Images[].Tags[] | .Key + "\t\t" + .Value'
+}
 function ec2-jqid(){
   jq -r '.Reservations[].Instances[].InstanceId'
 }
@@ -172,7 +176,7 @@ function mkkeypair (){
   KEY_NAME=$1
   [[ ! -z $2 ]] && REGION=$2 || REGION=us-east-1
   aws ec2 create-key-pair --key-name $KEY_NAME --region $REGION |
-  ruby -e "require 'json'; puts JSON.parse(STDIN.read)['KeyMaterial']" > ~/.ssh/$KEY_NAME &&
+  ruby -e "require 'json'; puts JSON.parse(STDIN.read)['KeyMaterial']" > ~/.ssh/$KEY_NAME.pem &&
     chmod 600 ~/.ssh/$KEY_NAME.pem
 }
 function rmkeypair (){

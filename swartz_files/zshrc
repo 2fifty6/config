@@ -45,6 +45,12 @@ function fromnow (){ date -v+$1 "+%Y-%m-%d" }
 function suniq(){ sort | uniq <&3 }
 alias vedit='vim ~/.vimrc'
 
+# output formatting
+BOLD="\e[1m"
+ITALIC="\e[3m"
+PLAIN="\e[0m"
+GREEN="\e[32m"
+RED_BOLD="\e[01;31m"
 function shdo () {
   FULLCMD=($*)
   CMD="$1" ARGS=${FULLCMD[@]:1}
@@ -60,12 +66,13 @@ function shdo () {
   RC=$?
   if [ $RC -eq 0 ]
   then
-    echo -e "[ \e[32mOK\e[0m ]"
+    echo -e "[ ${GREEN}OK${PLAIN} ]"
   else
-    echo -e "[ \e[01;31mFAIL\e[0m ] ($RC)"
+    echo -e "[ ${RED_BOLD}FAIL${PLAIN} ] ($RC)"
   fi
 }
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+export GOPATH=$HOME/work
 autoload -U compinit && compinit -u

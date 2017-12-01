@@ -18,6 +18,7 @@
   pus = push
   psh = push
   puh = push
+  upsh = push
   co = checkout
   cp = cherry-pick
   lo = log

@@ -17,6 +17,9 @@ alias fetch="git fetch --all"
 function gcommit(){
   git commit -m"$1"
 }
+function gpushamend(){
+  git commit --amend --no-edit && git show && sleep 1 && git push --force
+}
 function modall(){
   FILES="$(git status -s| sed 's/^R .*-> //'|sed 's/^[ ]*[A-Z]*[ ]*//'|sort|uniq|grep -v '??')"
 	if [[ ! -z "$@" ]]; then
