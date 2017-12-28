@@ -12,7 +12,7 @@ function dlogin() {
 function docker-run {
   OS=$1
   NAME=$2
-  docker run -h $OS --name $NAME -p$DOCKER_PORT:22 -it -d -v /home/dswartz/git/ansible:/tmp/ansible dswartz/2fifty6:$OS
+  docker run -h $OS --name $NAME -p$DOCKER_PORT:22 -it -d -v $HOME/git/ansible:/tmp/ansible dswartz/2fifty6:$OS
   DOCKER_PORT=$((DOCKER_PORT+1))
 }
 function docker-centos {
@@ -36,9 +36,9 @@ alias dfedora=docker-fedora
 alias ddebian=docker-debian
 alias dubuntu=docker-ubuntu
 
-function dnames { docker ps --format '{{.Names}}' }
-function dports { docker ps --format '{{.Ports}}' }
-function dids { docker ps --format '{{.ID}}' }
+function dnames { docker ps -a --format '{{.Names}}' }
+function dports { docker ps -a --format '{{.Ports}}' }
+function dids { docker ps -a --format '{{.ID}}' }
 
 function dall {
   for did in $(dids); do
@@ -47,6 +47,6 @@ function dall {
 }
 function dkillall {
   for did in $(dids); do
-    (docker kill $did && docker rm $did) 2>/dev/null
+    (docker kill $did; docker rm $did >/dev/null) 2>/dev/null
   done
 }
