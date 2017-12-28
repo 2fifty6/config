@@ -3,6 +3,10 @@ alias dedit=dockeredit
 alias dockerrefresh="source $0"
 alias drefresh=dockerrefresh
 
+function dlogin() {
+  docker login -u dswartz
+}
+
 [[ -z "$DOCKER_PORT" ]] && DOCKER_PORT=2222
 
 function docker-run {
@@ -43,6 +47,6 @@ function dall {
 }
 function dkillall {
   for did in $(dids); do
-    docker kill $did && docker rm $did
+    (docker kill $did && docker rm $did) 2>/dev/null
   done
 }

@@ -63,7 +63,7 @@ plugins=(
 #  knife_ssh
 #  kitchen
 #  osx
-#  docker
+  docker
 #  vagrant
 #  packer
 )
