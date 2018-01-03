@@ -18,8 +18,8 @@ if [[ `uname` == "Darwin" ]]; then
   alias showhidden="defaults write com.apple.Finder AppleShowAllFiles YES && killall Finder"
   alias hidehidden="defaults write com.apple.Finder AppleShowAllFiles NO && killall Finder"
   # homebrew
+  [[ -z "`which brew`" || "`which brew`" == "brew not found" ]] && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   [[ -z "`which wget`" ]] && brew install wget
-  [[ -z "`which brew`" ]] && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   # Various Plugins
   [[ ! -e /usr/local/share/zsh/site-functions/_aws ]] && (brew install awscli >/dev/null 2>&1 || brew link --overwrite awscli)
   . /usr/local/share/zsh/site-functions/_aws 2>/dev/null
