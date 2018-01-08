@@ -36,7 +36,7 @@
   sow = show
   sho = show
   hard = reset --hard
-  da = diff prod..dev
+  ls = ls-files
 [core]
   pager = less -+$LESS -R
   editor = vim
