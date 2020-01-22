@@ -74,7 +74,7 @@ plugins=(
 [[ ! -e ~/.oh-my-zsh/plugins/packer ]] && git clone https://github.com/gunzy83/packer-zsh-completion.git ~/.oh-my-zsh/plugins/packer
 [[ -s ~/.autojump/etc/profile.d/autojump.zsh ]] && . ~/.autojump/etc/profile.d/autojump.zsh
 
-source $ZSH/oh-my-zsh.sh
+#source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
